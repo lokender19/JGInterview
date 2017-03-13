@@ -1495,17 +1495,26 @@ namespace JG_Prospect.Sr_App
 
         protected void btncreate_Click(object sender, EventArgs e)
         {
+            CreateUser(sender, e);
+        }
+
+        /// <summary>
+        /// Method is used to create the user, It will upload the file generate the email if user do not entered the email.
+        /// If no email is entered then it will generate the email like : 
+        /// Email will be auto filled & auto generated using user’s “first name + . + lastname@companyname.com” 
+        /// recently we used .jmgrovebuildingsupply as company name.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void CreateUser(object sender, EventArgs e)
+        {
             if (!Page.IsValid)
                 return;
 
             string InstallId = string.Empty;
             string str_Status = string.Empty;
             string str_Reason = string.Empty;
-            //if (Convert.ToString(Session["UploadedPictureName"]) == "" || Convert.ToString(Session["UploadedPictureName"]) == null)
-            //{
-            //    ScriptManager.RegisterStartupScript(this, this.GetType(), "AlertBox", "alert('Please select image file');", true);
-            //    return;
-            //}
+            // Used o upload the attachment.          
             btn_UploadFiles_Click(sender, e);
             //if (chkboxcondition.Checked == true)
             {
@@ -1516,13 +1525,14 @@ namespace JG_Prospect.Sr_App
                 objuser.fristname = txtfirstname.Text;
                 objuser.lastname = txtlastname.Text;
 
-
-                if (txtemail.Text == "")
+                // If no email is entered then it will generate the email like : 
+                // Email will be auto filled & auto generated using user’s “first name + . + lastname@companyname.com” 
+                if (string.IsNullOrEmpty(txtemail.Text))
                 {
                     txtemail.Text = txtfirstname.Text + "." + txtlastname.Text + "@" + Utilits.AppSettingsValues.GetDomainActiveUserEailCreation;
-                
+
                 }
-                
+
                 objuser.email = txtemail.Text.Trim();
                 objuser.address = txtaddress.Text;
                 objuser.zip = txtZip.Text;
@@ -1533,7 +1543,8 @@ namespace JG_Prospect.Sr_App
                 objuser.designation = ddldesignation.SelectedItem.Text;
                 objuser.DesignationID = Convert.ToInt32(ddldesignation.SelectedValue);
                 objuser.phone = txtPhone.Text;
-                if (phoneTypeDropDownList.SelectedItem.Text == "Select")
+                // Compare the 2 values, If both are equal then method return 0. Method will ignore the case.
+                if (string.Compare(phoneTypeDropDownList.SelectedItem.Text, "Select",true) == 0)
                 {
                     objuser.phonetype = "";
                 }
@@ -1837,7 +1848,7 @@ namespace JG_Prospect.Sr_App
                 {
                     try
                     {
-                       
+
                         var result = InstallUserBLL.Instance.AddUser(objuser);
                         Session["ID"] = result.Item2;
 
@@ -6068,7 +6079,10 @@ namespace JG_Prospect.Sr_App
         }
 
         /// <summary>
-        /// Create email on the base of FirestName & Last Name
+        /// Create email on the base of FirestName & Last Name.
+        /// If no email is entered then Email will be like as metioned below.
+        /// Email will be auto filled & auto generated using user’s “first name + . + lastname@companyname.com” 
+        /// recently we used .jmgrovebuildingsupply as company name.
         /// </summary>
         private void CreateUserEmailID()
         {
